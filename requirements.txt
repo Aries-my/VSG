@@ -1,0 +1,8 @@
+numpy
+sklearn
+tensorflow==1.11.0
+jupyter
+matplotlib
+keras==2.2.4
+pandas
+GPy
