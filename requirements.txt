@@ -6,3 +6,4 @@ matplotlib
 keras==2.2.4
 pandas
 GPy
+statsmodels
