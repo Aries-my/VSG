@@ -211,3 +211,27 @@ def gen_true_x(X_train, point_list, length):
             i += 1
     return point_list
 
+def del_x(gen_sample_point, gen_x_point):
+    '''
+    find the deleted x points
+    :param gen_sample_point:
+    :param gen_x_point:
+    :return:
+    '''
+    del_x_point = []
+    for p in range(len(gen_sample_point)):
+        if_exist = 0
+        for q in range(len(gen_x_point)):
+            if compare_num(gen_sample_point[p],gen_x_point[q]) == 1:
+                if_exist = 1
+                break
+        if if_exist == 0:
+            del_x_point.append(gen_sample_point[p])
+    del_x_point = np.array(del_x_point)
+    return del_x_point
+
+def compare_num(list1, list2):
+    for i in range(len(list1)):
+        if list1[i] != list2[i]:
+            return 0
+    return 1
