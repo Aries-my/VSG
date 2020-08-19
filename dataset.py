@@ -32,16 +32,14 @@ def get_functional_test_data():
 
 def get_functional_train_data():
     "get functional train data"
-    X=[]
-    Y=[]
+    X = []
+    Y = []
     with open("../data/functional/train_data.txt",'r') as f:
         data = f.readlines()
 
     for line in data:
-        print(line)
         x = []
         item = line.split()
-        #print(item)
         for index in range(len(item)-1):
             num = float(item[index])
             x.append(num)

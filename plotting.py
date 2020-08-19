@@ -2,7 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.axisartist.axislines import SubplotZero
-import dataset
+from matplotlib import cm
+import dataset,sample
+
 
 def plot_dataset(X,  y, exp_config, fig_dir):
     plt.plot(X, y, 'rx', label="true")
@@ -12,28 +14,29 @@ def plot_dataset(X,  y, exp_config, fig_dir):
         plt.savefig(f"{fig_dir}/data.png")
     plt.show()
 
-def plot_front(X_train,Y_train,X_test,Y_test,exp_config, fig_dir):
+
+def plot_front(X_train, Y_train, X_test, Y_test, exp_config, fig_dir):
     fig = plt.figure()
     ax = Axes3D(fig)
-    x1 = np.arange(0,1,0.02)
-    x2 = np.arange(0,1,0.02)
-    x1,x2 = np.meshgrid(x1,x2)
-    z = dataset.function(x1,x2)
+    x1 = np.arange(0, 1, 0.02)
+    x2 = np.arange(0, 1, 0.02)
+    x1,x2 = np.meshgrid(x1, x2)
+    z = dataset.function(x1, x2)
     plt.title("This is graph of total data")
-    ax.plot_surface(x1,x2,z,rstride=1,cstride=1,cmap=plt.get_cmap('rainbow'))
+    ax.plot_surface(x1, x2, z, rstride=1, cstride=1)
     ax.set_xlabel('x1')
     ax.set_ylabel('x2')
     ax.set_zlabel('f(x1,x2)')
 
-
-    plt.plot(X_train[:,0],X_train[:,1], Y_train, 'rx', label="train")
-    plt.plot(X_test[:,0],X_test[:,1], Y_test, 'bx', label="test")
+    plt.plot(X_train[:, 0], X_train[:, 1], Y_train, 'bo', label="train samples")
+    plt.plot(X_test[:, 0], X_test[:, 1], Y_test, 'ro', label="test samples")
     plt.legend(loc='upper left')
     if exp_config.run.save_fig:
         plt.savefig(f"{fig_dir}/data.png")
     plt.show()
 
-def plot_genx(X_train, gen_x, def_x, length):
+
+def plot_genx(X_train, gen_x, del_x, length, n_sample):
     '''
     synthetic data
     the graph of original x points and generated x points in two-dimensional grid
@@ -51,22 +54,26 @@ def plot_genx(X_train, gen_x, def_x, length):
     fig.add_subplot(ax)
 
     """设置刻度"""
-    ax.set_ylim(-3, 3)
-    ax.set_yticks([-1, -0.5, 0, 0.5, 1])
-    ax.set_xlim([-5, 8])
-    ax.set_xticks([-5,5,1])
+    x1_min = min(X_train[0:])
+    x2_min = min(X_train[1:])
+    ax.set_xlim([x1_min-length[0], (x1_min-length[0])+n_sample[0]*length[0]])
+    x1 = np.arange(x1_min, ((x1_min-length[0])+n_sample[0]*length[0]), x1_space, "float")
+    ax.set_xticks(x1)
+    ax.set_ylim([x2_min-length[1], (x2_min-length[1])+n_sample[1]*length[1]])
+    x2 = np.arange(x2_min, ((x2_min-length[1])+n_sample[1]*length[1]), x2_space, "float")
+    ax.set_yticks(x2)
+
+    # 设置网格样式
+    ax.grid(True, linestyle='-', color="grey")
 
     plt.title('显示中文标题')
     plt.xlabel("x1")
     plt.ylabel("x2")
-    x = np.arange(0, len(list1)) + 1
-    x[0] = 1
-    my_x_ticks = np.arange(1, 14, 1)
-    plt.xticks(my_x_ticks)
-    plt.plot(x, list1, label='list1', marker="o", markersize=10)  # marker设置标记形状 markersize设置标记大小
-    plt.plot(x, list2, label='list2', marker="x", markersize=8)
-    plt.legend()
-    plt.grid()  # 添加网格
+
+    plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", label="train")
+    plt.scatter(gen_x[:, 0], gen_x[:, 1], marker="x", label="gen")
+    plt.scatter(del_x[:, 0], del_x[:, 1], marker='v', label="delete")
+
     plt.show()
 
     return

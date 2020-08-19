@@ -35,7 +35,6 @@ def get_importance(coe,Y_train):
         i = abs(value/y_std)
         imp.append(i)
 
-    print("importance of x:")
     imp = np.array(imp)
     imp = np.around(imp, decimals=5)
     print("The importance for every dimension:")
@@ -44,12 +43,27 @@ def get_importance(coe,Y_train):
 
 
 def get_min(nplist):
+    '''
+    get minist value in nplist where values are all not nagetive
+    :param nplist:
+    :return:
+    '''
     min = nplist[1]
     for value in nplist:
         if value != 0:
             if value <min:
                 min = value
     return min
+
+
+def get_ab(nplist):
+    list = []
+    for value in nplist:
+        if value < 0:
+            value = 0 - value
+        list.append(value)
+    list = np.array(list)
+    return list
 
 
 def fit_length(L,length):
@@ -68,6 +82,7 @@ def fit_length(L,length):
 
 
 def get_sample_length(X_train,imp):
+    imp = get_ab(imp)
     length = []
     sum_x = np.sum(np.square(X_train), 1)
     dist = np.add(np.add(-2 * np.dot(X_train, X_train.T), sum_x).T, sum_x)
@@ -77,7 +92,7 @@ def get_sample_length(X_train,imp):
     np.set_printoptions(suppress=True)
 
     m_dist = get_min(dist)
-    m_imp = get_min(imp)
+    m_imp = min(imp)
 
     print("欧氏距离：")
     print(dist)
