@@ -250,3 +250,29 @@ def compare_num(list1, list2):
         if list1[i] != list2[i]:
             return 0
     return 1
+
+
+def gen_is_list(X_train, length, is_fliter):
+    '''
+    genarate the 0-1 graph of the samples in X
+    :param X_train:
+    :param point_list:
+    :param length:
+    :param is_fliter:
+    :return:
+    '''
+    x_min = np.amin(X_train, axis=0)
+    x1_min = x_min[0]
+    x2_min = x_min[1]
+    for p in range(len(is_fliter[0])):
+        for q in range(len(is_fliter[1])):
+            x1_l = x1_min - length[0] / 2 + p * length[0]
+            x1_u = x1_min - length[0] / 2 + (p + 1) * length[0]
+            x2_l = x2_min - length[1] / 2 + q * length[1]
+            x2_u = x2_min - length[1] / 2 + (q + 1) * length[1]
+            for x in X_train:
+                if x[0] > x1_l and x[0] < x1_u and x[1] > x2_l and x[1] < x2_u:
+                    is_fliter[p][q] = 1
+                    break
+    return is_fliter
+

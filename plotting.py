@@ -54,13 +54,15 @@ def plot_genx(X_train, gen_x, del_x, length, n_sample):
     fig.add_subplot(ax)
 
     """设置刻度"""
-    x1_min = min(X_train[0:])
-    x2_min = min(X_train[1:])
-    ax.set_xlim([x1_min-length[0], (x1_min-length[0])+n_sample[0]*length[0]])
-    x1 = np.arange(x1_min, ((x1_min-length[0])+n_sample[0]*length[0]), x1_space, "float")
+    x_min = np.amin(X_train, axis=0)
+    x1_min = x_min[0]
+    x2_min = x_min[1]
+
+    ax.set_xlim([x1_min-length[0] / 2, (x1_min-length[0])+n_sample[0]*length[0]])
+    x1 = np.arange(x1_min - length[0] / 2, ((x1_min-length[0])+n_sample[0]*length[0]), x1_space, "float")
     ax.set_xticks(x1)
-    ax.set_ylim([x2_min-length[1], (x2_min-length[1])+n_sample[1]*length[1]])
-    x2 = np.arange(x2_min, ((x2_min-length[1])+n_sample[1]*length[1]), x2_space, "float")
+    ax.set_ylim([x2_min-length[1] / 2, (x2_min-length[1])+n_sample[1]*length[1]])
+    x2 = np.arange(x2_min - length[1] / 2, ((x2_min-length[1])+n_sample[1]*length[1]), x2_space, "float")
     ax.set_yticks(x2)
 
     # 设置网格样式
