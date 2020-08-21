@@ -88,7 +88,10 @@ def sample_attri(sample_list, X_train, gen_x_point, del_x_points):
 
 
 def in_sample(point, sample):
+    i = 0
     for index in range(len(point)):
         if point[index] > sample.lim[index][0] and point[index] < sample.lim[index][1]:
-            return  1
-    return 0
+            i = 1
+        else:
+            return 0
+    return 1
