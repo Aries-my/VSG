@@ -1,13 +1,8 @@
 import numpy as np
 
 
-def qr_select(n_sample, is_filter):
-    sta_index = np.argmin(n_sample)
-
-
+def qr_selection(con_list, sample_list):
+    for dim in range(len(con_list)):
+        return
     return
 
-
-def get_col_sum(is_filter, col):
-
-    return
