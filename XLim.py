@@ -26,7 +26,7 @@ def con_sample(con_list, X_train, gen_x_point, del_x_points, sample_list, n_samp
                       x_min[index]+i*length[index])
             x_list.append(xl)
             xl_attri(xl, X_train, gen_x_point, del_x_points)
-            xl.uncheck_num = xl.gen_num
+            xl.checked_num = xl.ori_num
             add_sample(xl, sample_list)
         con_list.append(x_list)
 
@@ -58,9 +58,10 @@ def in_limit(point, xlim):
     return 0
 
 
-def con_s(gen_sample_point, length, n_sample, sample_list):
-    for point in gen_sample_point:
-        sc = SampleCharacter.SampleCharacter(length, point)
+def con_s(gen_sample_point, length, n_sample, sample_list, y_pre):
+    for index in range(len(gen_sample_point)):
+        point = gen_sample_point[index]
+        sc = SampleCharacter.SampleCharacter(length, point, y_pre[index])
         for i in range(len(n_sample)):
             xl = point[i] - length[i] / 2
             xu = point[i] + length[i] / 2
