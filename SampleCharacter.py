@@ -10,5 +10,7 @@ class SampleCharacter:
         self.uncheck_num = 0
         self.vir_point = []
         self.y_pre = y_pre
+        self.ori_xlist = []
+        self.ori_ylist = []
 
 

@@ -75,9 +75,11 @@ def con_s(gen_sample_point, length, n_sample, sample_list, y_pre):
 
 def sample_attri(sample_list, X_train, gen_x_point, del_x_points):
     for sample in sample_list:
-        for point in X_train:
+        for index in range(len(X_train)):
+            point = X_train(index)
             if in_sample(point, sample):
                 sample.ori_num += 1
+                sample.ori_list.append(point)
         for point in gen_x_point:
             if in_sample(point, sample):
                 sample.gen_num += 1
