@@ -1,14 +1,13 @@
 class SampleCharacter:
-    def __init__(self, length, cPoint, y_pre):
-        self.dim = len(length)
+    def __init__(self, dim, cPoint, y_pre):
+        self.dim = dim
         self.center = cPoint
         self.lim = []
         self.ori_num = 0
         self.gen_num = 0
         self.del_num = 0
         self.checked_num = 0
-        self.uncheck_num = 0
-        self.vir_point = []
+        self.checked = 0
         self.y_pre = y_pre
         self.ori_xlist = []
         self.ori_ylist = []
