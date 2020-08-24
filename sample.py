@@ -143,10 +143,10 @@ def divide_sample(X_train, length):
 
     L = np.array(L)
     num, n_sample = fit_length(L, length)
-    while num > 130:
+    while num > 200:
         for index in range(len(length)):
             L[index] = L[index] - length[index]
-            length[index] = length[index] * 2
+            length[index] = length[index] * 1.5
             L[index] = L[index] + length[index]
         num, n_sample= fit_length(L, length)
 
