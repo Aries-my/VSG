@@ -1,7 +1,6 @@
 class SampleCharacter:
-    def __init__(self, dim, cPoint, y_pre):
+    def __init__(self, dim, y_pre):
         self.dim = dim
-        self.center = cPoint
         self.lim = []
         self.ori_num = 0
         self.gen_num = 0

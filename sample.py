@@ -9,13 +9,13 @@ def get_sta_reg_cov(X_train, Y_train):
     X_normal = preprocessing.scale(X_train)
     Y_normal = preprocessing.scale(Y_train)
     model_1 = LinearRegression()
-    model_1.fit(X_train,Y_train)
+    model_1.fit(X_train, Y_train)
     print("Unstandardized regression coefficient: ")
     print(np.around(model_1.coef_, decimals=5))
     print("normal coefficient: ")
     print(np.around(model_1.intercept_, decimals=5))
     model_2 = LinearRegression()
-    model_2.fit(X_normal,Y_normal)
+    model_2.fit(X_normal, Y_normal)
     print("Standardized regression coefficient: ")
     model_2_coef = np.around(model_2.coef_, decimals=5)
     print(model_2_coef)
@@ -24,7 +24,7 @@ def get_sta_reg_cov(X_train, Y_train):
     return model_2_coef
 
 
-def get_importance(coe,Y_train):
+def get_importance(coe, Y_train):
 
     # 得到每列的标准差,是一维数组
     y_std = np.std(Y_train)
@@ -32,7 +32,7 @@ def get_importance(coe,Y_train):
     print(np.around(y_std, decimals=5))
     imp = []
     for value in coe:
-        i = abs(value/y_std)
+        i = abs(value / y_std)
         imp.append(i)
 
     imp = np.array(imp)
@@ -44,36 +44,26 @@ def get_importance(coe,Y_train):
 
 def get_min(nplist):
     '''
-    get minist value in nplist where values are all not nagetive
+    get minist value in nplist where all values are not nagetive
     :param nplist:
     :return:
     '''
     min = nplist[1]
     for value in nplist:
         if value != 0:
-            if value <min:
+            if value < min:
                 min = value
     return min
 
 
-def get_ab(nplist):
-    list = []
-    for value in nplist:
-        if value < 0:
-            value = 0 - value
-        list.append(value)
-    list = np.array(list)
-    return list
-
-
-def fit_length(L,length):
+def fit_length(L, length):
     num = 1
     n_sample = []
     for index in range(len(L)):
-        n = math.floor(L[index] / length[index])
-        num = num * n
+        n = math.ceil(L[index] / length[index])
+        num *= n
         n_sample.append(n)
-        print("第" + str(index) + "维的分割数是：" + str(n))
+        print("The number of diversions of the " + str(index) + "th dimension is: " + str(n))
         print(n_sample[index])
 
     print("总的样方分割数为：")
@@ -81,24 +71,24 @@ def fit_length(L,length):
     return num, n_sample
 
 
-def get_sample_length(X_train,imp):
-    imp = get_ab(imp)
+def get_sample_length(X_train, imp):
     length = []
+    #get Euclidean distance in x domain
     sum_x = np.sum(np.square(X_train), 1)
     dist = np.add(np.add(-2 * np.dot(X_train, X_train.T), sum_x).T, sum_x)
     dist = np.array(dist)
     dist = np.around(dist, decimals=3)
-    dist = dist.flatten()
-    np.set_printoptions(suppress=True)
+    print("Euclidean distance in x domain：")
+    print(dist)
 
+    np.set_printoptions(suppress=True)
+    dist = dist.flatten()
     m_dist = get_min(dist)
     m_imp = min(imp)
 
-    print("欧氏距离：")
-    print(dist)
-    print("min dist:")
+    print("minist dist:")
     print(m_dist)
-    print("min imp:")
+    print("minist imp:")
     print(m_imp)
 
     for index in range(len(imp)):
@@ -112,43 +102,29 @@ def get_sample_length(X_train,imp):
     return length
 
 
-def get_x_len(X_train):
+def get_x_len(x_min, x_max):
     L = []
-    X = X_train.T
-    print("X_train.T:")
-    print(X)
 
-    for index in range(len(X)):
-        mi = min(X[index])
-        ma = max(X[index])
-        print("第" + str(index) + "行最大值：" + str(ma) + "   最小值：" + str(mi))
-        l = ma - mi
+    for index in range(len(x_min)):
+        minx = x_min[index]
+        maxx = x_max[index]
+        print("The value area of x in the sample is between "
+              + str(minx) + " and " + str(maxx) + "in the dimension of No. " + str(index))
+        l = maxx - minx
         L.append(l)
 
     L = np.array(L)
-    print("The length of every diversion:")
+    print("The full length of every dimension:")
     print(L)
     return L
 
 
-def divide_sample(X_train, length):
-    L = []
-    X = X_train.T
-    for index in range(len(X)):
-        mi = min(X[index])
-        ma = max(X[index])
-        print("第" + str(index) + "行最大值：" + str(ma) + "   最小值：" + str(mi))
-        l = ma - mi + length[index]
-        L.append(l)
-
-    L = np.array(L)
+def divide_sample(length, L):
     num, n_sample = fit_length(L, length)
     while num > 200:
         for index in range(len(length)):
-            L[index] = L[index] - length[index]
-            length[index] = length[index] * 1.5
-            L[index] = L[index] + length[index]
-        num, n_sample= fit_length(L, length)
+            length[index] = length[index] * 1.2
+        num, n_sample = fit_length(L, length)
 
     print("分割数：")
     n_sample = np.array(n_sample)

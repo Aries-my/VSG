@@ -15,6 +15,7 @@ class XLim:
         self.checked_num = 0
         self.uncheck_num = 0
         self.checked = 0
+        self.xlist = []
 
 
 def con_sample(con_list, X_train, gen_x_point, del_x_points, sample_list, n_sample, length):
