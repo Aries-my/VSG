@@ -1,14 +1,12 @@
 import SampleCharacter
-import numpy as np
 
 
 class XLim:
-    def __init__(self, dim, xl, xu, xc):
+    def __init__(self, dim, xl, xu):
         self.dim = dim
         self.slist = []
         self.xl = xl
         self.xu = xu
-        self.xc = xc
         self.ori_num = 0
         self.gen_num = 0
         self.del_num = 0
@@ -18,16 +16,13 @@ class XLim:
         self.xlist = []
 
 
-def con_sample(con_list, X_train, gen_x_point, del_x_points, sample_list, n_sample, length):
-    x_min = np.amin(X_train, axis=0)
-    for index in range(len(n_sample)):
+def con_sample(con_list, X_train, gen_x_point, sample_list, length, x_min, dim):
+    for index in range(dim):
         x_list = []
-        for i in range(n_sample[index]):
-            xl = XLim(index, x_min[index]+i*length[index] - length[index] / 2,
-                      x_min[index] + i * length[index] + length[index] / 2,
-                      x_min[index]+i*length[index])
+        for i in range(dim):
+            xl = XLim(index, x_min[index] + i * length[index], x_min[index] + (i + 1) * length[index])
             x_list.append(xl)
-            xl_attri(xl, X_train, gen_x_point, del_x_points)
+            xl_attri(xl, X_train, gen_x_point)
             add_sample(xl, sample_list)
         con_list.append(x_list)
 
@@ -39,32 +34,28 @@ def add_sample(xlim, sample_list):
     return
 
 
-def xl_attri(xl, X_train, gen_x_point, del_x_points):
+def xl_attri(xl, X_train, gen_x_point):
     for point in X_train:
         if in_limit(point, xl):
             xl.ori_num += 1
     for point in gen_x_point:
         if in_limit(point, xl):
             xl.gen_num += 1
-    for point in del_x_points:
-        if in_limit(point, xl):
-            xl.del_num += 1
     xl.uncheck_num = xl.gen_num
     return
 
 
 def in_limit(point, xlim):
     dim = xlim.dim
-    if point[dim] > xlim.xl and point[dim] < xlim.xu:
+    if xlim.xl < point[dim] < xlim.xu:
         return 1
     return 0
 
 
-def con_s(gen_sample_point, length, n_sample, sample_list, y_pre):
-    for index in range(len(gen_sample_point)):
-        point = gen_sample_point[index]
-        sc = SampleCharacter.SampleCharacter(len(n_sample), point, y_pre[index])
-        for i in range(len(n_sample)):
+def con_s(gen_sample_point, length, sample_list, dim):
+    for point in gen_sample_point:
+        sc = SampleCharacter.SampleCharacter(dim, point)
+        for i in range(dim):
             xl = point[i] - length[i] / 2
             xu = point[i] + length[i] / 2
             xlim = []
@@ -75,7 +66,7 @@ def con_s(gen_sample_point, length, n_sample, sample_list, y_pre):
     return
 
 
-def sample_attri(sample_list, X_train, gen_x_point, del_x_points, Y_train):
+def sample_attri(sample_list, X_train, gen_x_poin, del_x_points, Y_train):
     for sample in sample_list:
         for index in range(len(X_train)):
             point = X_train[index]

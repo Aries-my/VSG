@@ -36,7 +36,7 @@ def plot_front(X_train, Y_train, X_test, Y_test, exp_config, fig_dir):
     plt.show()
 
 
-def plot_genx(X_train, gen_x, del_x, length, n_sample):
+def plot_genx(X_train, gen_x, del_x, length, n_sample, exp_config, fig_dir):
     '''
     synthetic data
     the graph of original x points and generated x points in two-dimensional grid
@@ -75,6 +75,9 @@ def plot_genx(X_train, gen_x, del_x, length, n_sample):
     plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", label="train")
     plt.scatter(gen_x[:, 0], gen_x[:, 1], marker="x", label="gen")
     plt.scatter(del_x[:, 0], del_x[:, 1], marker='v', label="delete")
+
+    if exp_config.run.save_fig:
+        plt.savefig(f"{fig_dir}/vir_point.png")
 
     plt.show()
 

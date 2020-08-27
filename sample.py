@@ -134,24 +134,21 @@ def divide_sample(length, L):
     return n_sample, length
 
 
-def gen_x_center(X_train, length, n_sample):
-    X_T = X_train.T
+def gen_x_center(dim, length, n_sample, x_min):
     X = []
-    for index in range(len(X_T)):
-        mi = min(X_T[index])
+    for index in range(dim):
+        mi = x_min[index]
         print("第"+str(index)+"维度，最小的x为"+str(mi))
         i = 0
         x = []
-        print("index= "+str(index))
         while i < n_sample[index]:
-            a = mi+i*length[index]
+            a = mi + (i + 1 / 2) * length[index]
+            a = np.around(a, decimals=5)
             x.append(a)
             i += 1
         X.append(x)
-        print("第"+str(index)+"维度的x生成的值有：")
+        print("第"+str(index)+"维度的中心值有：")
         print(x)
-    print("生成的x值：")
-    print(X)
     return X
 
 
@@ -179,13 +176,28 @@ def gen_product(list_of_list):
     return list1
 
 
+def cross_point_del(gen_x_cross, X_train):
+    for point in gen_x_cross:
+        for x in X_train:
+            if same_point(point, x) == 1:
+                gen_x_cross.remove(point)
+    return
+
+
+def same_point(point1, point2):
+    for i in range(len(point1)):
+        if point1[i] != point2[i]:
+            return 0
+    return 1
+
+
 def sample_point_num (X_train, length, point):
     for x in X_train:
         r = 0
         for index in range(len(length)):
             low = point[index] - length[index] / 2
             up = point[index] + length[index] / 2
-            if x[index] > low and x[index] < up:
+            if low < x[index] < up:
                 r += 1
         if r == len(length):
             return bool(1)
@@ -194,7 +206,7 @@ def sample_point_num (X_train, length, point):
 
 def gen_true_x(X_train, point_list, length):
     i = 0
-    while i <len(point_list):
+    while i < len(point_list):
         r = sample_point_num(X_train, length, point_list[i])
         if r:
             point_list = np.delete(point_list, i, axis=0)
