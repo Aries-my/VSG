@@ -1,4 +1,6 @@
 import SampleCharacter
+import numpy as np
+import random
 
 
 class XLim:
@@ -16,15 +18,73 @@ class XLim:
         self.xlist = []
 
 
-def con_sample(con_list, X_train, gen_x_point, sample_list, length, x_min, dim):
+def con_sample(xlim_list, length, x_min, dim, n_sample):
     for index in range(dim):
         x_list = []
-        for i in range(dim):
+        for i in range(n_sample[index]):
             xl = XLim(index, x_min[index] + i * length[index], x_min[index] + (i + 1) * length[index])
             x_list.append(xl)
-            xl_attri(xl, X_train, gen_x_point)
+        xlim_list.append(x_list)
+    add_xvalue(xlim_list, dim)
+
+
+def sample_feature(xlim_list, X_train, gen_x_cross, sample_list, dim,Y_train, xvalue):
+    for index in range(dim):
+        for i in range(len(xlim_list[index])):
+            xl = xlim_list[index][i]
+            xl_attri(xl, X_train, gen_x_cross, xvalue)
             add_sample(xl, sample_list)
-        con_list.append(x_list)
+    sample_attri(sample_list, X_train, gen_x_cross, Y_train)
+    add_xvalue(xlim_list, dim)
+
+
+def add_xvalue(xlim_list, dim):
+    for index in range(dim):
+        for xl in xlim_list[index]:
+            for sample in xl.slist:
+                sample.xlist.append(xl.xlist)
+    return
+
+
+def sample_filling(xlim_list, sample_list, n_sample, dim):
+    idim = np.argmax(n_sample)
+    black = 0
+    for index in range(len(xlim_list[idim])):
+        xl = xlim_list[idim][index]
+        for sample_index in xl.slist:
+            sample = xl.slist[sample_list]
+            if sample.gen_num == 0 and sample.ori_num == 0:
+                r = get_sample(xl, sample, sample_index)
+                if r >= 0:
+                    i = len(xl.slist[r].gen_xlist)
+                    t = random.randint(0, i)
+                    x_insert = random.uniform(sample.lim[idim][0], sample.lim[idim][1])
+                    x_gen = xl.slist[r].gen_xlist[t]
+                    x_gen[idim] = x_insert
+                    sample.gen_num += 1
+                else:
+                    black += 1
+
+
+
+def get_sample(xl, sample, s_index):
+    r = -1
+    for i in range(len(xl.slist)):
+        if xl.slist[i].gen_num !=0 or xl.slist[i].ori_num != 0 :
+            t = i
+            if abs(t - s_index) < abs(r - s_index):
+                r = t
+    return r
+
+
+def get_x(xlim, sample):
+    xl = sample.lim[xlim.dim][0]
+    xu = sample.lim[xlim.dim][1]
+    xvalue = []
+    for x in xlim.xlist:
+        if xl < x < xu:
+            xvalue.append(x)
+    return xvalue
 
 
 def add_sample(xlim, sample_list):
@@ -34,14 +94,18 @@ def add_sample(xlim, sample_list):
     return
 
 
-def xl_attri(xl, X_train, gen_x_point):
+def xl_attri(xl, X_train, gen_x_cross, xvalue):
     for point in X_train:
         if in_limit(point, xl):
             xl.ori_num += 1
-    for point in gen_x_point:
+    for point in gen_x_cross:
         if in_limit(point, xl):
             xl.gen_num += 1
-    xl.uncheck_num = xl.gen_num
+    xl.uncheck_num += xl.gen_num
+    dim = xl.dim
+    for x in xvalue[dim]:
+        if xl.xl < x < xl.xu:
+            xl.xlist.append(x)
     return
 
 
@@ -66,7 +130,7 @@ def con_s(gen_sample_point, length, sample_list, dim):
     return
 
 
-def sample_attri(sample_list, X_train, gen_x_poin, del_x_points, Y_train):
+def sample_attri(sample_list, X_train, gen_x_cross, Y_train):
     for sample in sample_list:
         for index in range(len(X_train)):
             point = X_train[index]
@@ -75,12 +139,9 @@ def sample_attri(sample_list, X_train, gen_x_poin, del_x_points, Y_train):
                 sample.ori_xlist.append(point)
                 sample.ori_ylist.append(Y_train[index])
                 sample.checked = 1
-        for point in gen_x_point:
+        for point in gen_x_cross:
             if in_sample(point, sample):
                 sample.gen_num += 1
-        for point in del_x_points:
-            if in_sample(point, sample):
-                sample.del_num += 1
     return
 
 

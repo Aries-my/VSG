@@ -12,5 +12,6 @@ class SampleCharacter:
         self.ori_ylist = []
         self.gen_xlist = []
         self.gen_ylist = []
+        self.xlist = []
 
 
