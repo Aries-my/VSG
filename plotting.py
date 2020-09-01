@@ -36,7 +36,7 @@ def plot_front(X_train, Y_train, X_test, Y_test, exp_config, fig_dir):
     plt.show()
 
 
-def plot_genx(X_train, gen_x, del_x, length, n_sample, exp_config, fig_dir):
+def plot_genx(X_train, gen_x, length, n_sample, exp_config, fig_dir, xlimit):
     '''
     synthetic data
     the graph of original x points and generated x points in two-dimensional grid
@@ -49,7 +49,7 @@ def plot_genx(X_train, gen_x, del_x, length, n_sample, exp_config, fig_dir):
     x2_space = length[1]
     plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
     plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
-    fig = plt.figure(2, (10, 6))
+    fig = plt.figure(2, (10, 10))
     ax = SubplotZero(fig, 1, 1, 1)
     fig.add_subplot(ax)
 
@@ -58,12 +58,12 @@ def plot_genx(X_train, gen_x, del_x, length, n_sample, exp_config, fig_dir):
     x1_min = x_min[0]
     x2_min = x_min[1]
 
-    ax.set_xlim([x1_min-length[0] / 2, (x1_min-length[0])+n_sample[0]*length[0]])
+    ax.set_xlim(0, 1)
     x1 = np.arange(x1_min - length[0] / 2, ((x1_min-length[0])+n_sample[0]*length[0]), x1_space, "float")
-    ax.set_xticks(x1)
-    ax.set_ylim([x2_min-length[1] / 2, (x2_min-length[1])+n_sample[1]*length[1]])
+    ax.set_xticks(xlimit[0])
+    ax.set_ylim(0, 1)
     x2 = np.arange(x2_min - length[1] / 2, ((x2_min-length[1])+n_sample[1]*length[1]), x2_space, "float")
-    ax.set_yticks(x2)
+    ax.set_yticks(xlimit[1])
 
     # 设置网格样式
     ax.grid(True, linestyle='-', color="grey")
@@ -73,8 +73,8 @@ def plot_genx(X_train, gen_x, del_x, length, n_sample, exp_config, fig_dir):
     plt.ylabel("x2")
 
     plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", label="train")
-    plt.scatter(gen_x[:, 0], gen_x[:, 1], marker="x", label="gen")
-    plt.scatter(del_x[:, 0], del_x[:, 1], marker='v', label="delete")
+    plt.scatter(gen_x[:, 0], gen_x[:, 1], marker="o", label="gen")
+    #plt.scatter(del_x[:, 0], del_x[:, 1], marker='v', label="delete")
 
     if exp_config.run.save_fig:
         plt.savefig(f"{fig_dir}/vir_point.png")

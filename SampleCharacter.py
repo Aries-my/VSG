@@ -13,5 +13,3 @@ class SampleCharacter:
         self.gen_xlist = []
         self.gen_ylist = []
         self.xlist = []
-
-
