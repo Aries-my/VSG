@@ -121,7 +121,7 @@ def get_x_len(x_min, x_max):
 
 def divide_sample(length, L):
     num, n_sample = fit_length(L, length)
-    while num > 200:
+    while num > 130:
         for index in range(len(length)):
             length[index] = length[index] * 1.2
         num, n_sample = fit_length(L, length)
