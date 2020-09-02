@@ -1,20 +1,102 @@
+import numpy as np
+import XLim
+import copy
 
-def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, gen_x_point, ols):
-    l = len(gen_x_point)
-    while l > 0:
-        dim, lim = chose_xlim(xlim_list)
-        #print("start from ")
-        print("x"+str(dim)+" No."+str(lim)+" gap")
-        checked_xlist = []
-        checked_ylist = []
-        checked_list(xlim_list[dim][lim], checked_xlist, checked_ylist)
-        for sample in xlim_list[dim][lim].slist:
-            if sample.checked == 0:
-                qr(sample, vir_xpoint, vir_ypoint, models, checked_ylist, checked_xlist, dim, y_quantile, ols)
-                l -= 1
-        xlim_list[dim][lim].checked = 1
+
+def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, gen_x_point, ols, x_value_ori, x_value,
+                 n_sample, X_train, Y_train, sample_list, point_list):
+    n = copy.deepcopy(n_sample)
+
+    idim = np.argmax(n)
+    ni = np.amax(n)
+    for x in x_value_ori[idim]:
+        index = find_orix(idim, x, X_train)
+        si, xi = confir_sample(X_train, index, sample_list, xlim_list, idim)
+        p_list = []
+        l_sort(point_list, X_train, idim, p_list)
+        l = len(p_list)
+        while l > 0:
+            i = confir_point(p_list, x, idim)
+
+
+
+def confir_point(p_list, x, dim):
+    iid = 0
+    l = -1
+    u = -1
+    m = 0
+    for index in range(len(p_list)):
+        if p_list[index][dim] > x:
+            iid = index
+            m = index
+            break
+    i = iid
+    while i < len(p_list):
+        if p_list[i].checked == 0:
+            u = i
+        else:
+            i += 1
+    i = iid - 1
+    while i > -1:
+        if p_list[i].checked == 0:
+            l = i
+        else:
+            i -= 1
+    if l == -1:
+        if u == -1:
+            return -1
+        else:
+            return u
+    else:
+        if u == -1:
+            return l
+        else:
+            if abs(l - m) < abs(u - m):
+                return l
+            else:
+                return u
+
+
+def l_sort(point_list, X_train, dim, p_list):
+    for point in point_list:
+        r = -1
+        for i in range(len(X_train)):
+            if i != dim and point.x[i] != X_train[i]:
+                    r = 0
+                    break
+        if r == -1:
+            if len(p_list) == 0:
+                p_list.append(point)
+            else:
+                f = -1
+                for j in range(len(p_list)):
+                    if point.x[dim] < p_list[j].x[dim]:
+                        p_list.insert(j, point)
+                        f = 0
+                        break
+                if f == 0:
+                    p_list.append(point)
     return
 
+
+def confir_sample(X_train, index, sample_list, xlim_list, dim):
+    x = X_train[index]
+    si = 0
+    xi = 0
+    for si in range(len(sample_list)):
+        if XLim.in_sample(x, sample_list[si]):
+            break
+    for xi in range(len(xlim_list[dim])):
+        if XLim.in_limit(x, xlim_list[dim][xi]):
+            break
+    return si, xi
+
+
+def find_orix(dim, xv, X_train):
+    for index in range(len(X_train)):
+        if xv == X_train[index][dim]:
+            return index
+    return -1
 
 def qr(sample, vir_xpoint, vir_ypoint, models, checked_ylist, checked_xlist, dim, y_quantile, ols):
     closed_y_index, closed_y_n = closed_y(sample.y_pre, checked_ylist)
@@ -68,9 +150,11 @@ def checked_list(xlim, checked_xlist, checked_ylist):
                 checked_xlist.append(x)
             for y in sample.ori_ylist:
                 checked_ylist.append(y)
-        if sample.checked_num == 1:
-            checked_xlist.append(sample.center)
-            checked_ylist.append(sample.y_pre)
+        if sample.checked_num > 0:
+            for i in range(len(sample.checked_list)):
+                if sample.checked_list[i] == 1:
+                    checked_xlist.append(sample.gen_xlist[i])
+                    checked_ylist.append(sample.gen_ylist[i])
     return
 
 

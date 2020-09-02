@@ -201,4 +201,5 @@ def add_y(sample_list, gpr):
             point = [point]
             point = np.array(point)
             sample.gen_ylist.append(gpr.predict(point)[0])
+            sample.checked_list.append(0)
     return

@@ -12,4 +12,6 @@ class SampleCharacter:
         self.ori_ylist = []
         self.gen_xlist = []
         self.gen_ylist = []
+        self.checked_list = []
         self.xlist = []
+        self.points = []
