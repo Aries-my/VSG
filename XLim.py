@@ -28,14 +28,19 @@ def con_sample(xlim_list, length, x_min, dim, n_sample):
         xlim_list.append(x_list)
 
 
-def sample_feature(xlim_list, X_train, gen_x_cross, sample_list, dim, Y_train, xvalue):
+def sample_feature(xlim_list, sample_list, xvalue):
     for index in range(len(xlim_list)):
         for i in range(len(xlim_list[index])):
             xl = xlim_list[index][i]
-            xl_attri(xl, X_train, gen_x_cross, xvalue)
+            dim = xl.dim
+            for x in xvalue[dim]:
+                if xl.xl < x < xl.xu:
+                    xl.xlist.append(x)
+            if len(xl.xlist) == 0:
+                x_insert = random.uniform(xl.xl, xl.xu)
+                xl.xlist.append(x_insert)
+                xvalue[index].append(x_insert)
             add_sample(xl, sample_list)
-    sample_attri(sample_list, X_train, gen_x_cross, Y_train)
-    add_xvalue(xlim_list)
 
 
 def add_xvalue(xlim_list):
@@ -126,17 +131,16 @@ def add_sample(xlim, sample_list):
     return
 
 
-def xl_attri(xl, X_train, gen_x_cross, xvalue):
-    for point in X_train:
-        if in_limit(point, xl):
-            xl.ori_num += 1
-    for point in gen_x_cross:
-        if in_limit(point, xl):
-            xl.gen_num += 1
-    dim = xl.dim
-    for x in xvalue[dim]:
-        if xl.xl < x < xl.xu:
-            xl.xlist.append(x)
+def xl_attri(xlim_list, X_train, gen_x_cross):
+    for index in range(len(xlim_list)):
+        for xl in xlim_list[index]:
+            for point in X_train:
+                if in_limit(point, xl):
+                    xl.ori_num += 1
+            for point in gen_x_cross:
+                if in_limit(point, xl):
+                    xl.gen_num += 1
+            xl.uncheck_num = xl.gen_num
     return
 
 
@@ -176,6 +180,7 @@ def sample_attri(sample_list, X_train, gen_x_cross, Y_train):
                 sample.ori_ylist.append(Y_train[index])
         for point in gen_x_cross:
             if in_sample(point, sample):
+                sample.gen_num += 1
                 sample.gen_xlist.append(point)
     return
 
@@ -183,6 +188,17 @@ def sample_attri(sample_list, X_train, gen_x_cross, Y_train):
 def in_sample(point, sample):
     for index in range(len(point)):
         if sample.lim[index][0] <= point[index] < sample.lim[index][1]:
-            return 1
+            r = 1
         else:
             return 0
+    return 1
+
+
+def add_y(sample_list, gpr):
+    for sample in sample_list:
+        for index in range(len(sample.gen_xlist)):
+            point = sample.gen_xlist[index]
+            point = [point]
+            point = np.array(point)
+            sample.gen_ylist.append(gpr.predict(point)[0])
+    return

@@ -1,18 +1,18 @@
 
-def qr_selection(con_list, models, vir_xpoint, vir_ypoint, y_quantile, gen_x_point, ols):
+def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, gen_x_point, ols):
     l = len(gen_x_point)
     while l > 0:
-        dim, lim = chose_xlim(con_list)
+        dim, lim = chose_xlim(xlim_list)
         #print("start from ")
         print("x"+str(dim)+" No."+str(lim)+" gap")
         checked_xlist = []
         checked_ylist = []
-        checked_list(con_list[dim][lim], checked_xlist, checked_ylist)
-        for sample in con_list[dim][lim].slist:
+        checked_list(xlim_list[dim][lim], checked_xlist, checked_ylist)
+        for sample in xlim_list[dim][lim].slist:
             if sample.checked == 0:
                 qr(sample, vir_xpoint, vir_ypoint, models, checked_ylist, checked_xlist, dim, y_quantile, ols)
                 l -= 1
-        con_list[dim][lim].checked = 1
+        xlim_list[dim][lim].checked = 1
     return
 
 
@@ -74,13 +74,13 @@ def checked_list(xlim, checked_xlist, checked_ylist):
     return
 
 
-def chose_xlim(con_list):
+def chose_xlim(xlim_list):
     d = 0
     l = 0
     r = 0
-    for dim in range(len(con_list)):
-        for index in range(len(con_list[dim])):
-            xlim = con_list[dim][index]
+    for dim in range(len(xlim_list)):
+        for index in range(len(xlim_list[dim])):
+            xlim = xlim_list[dim][index]
             r1 = (xlim.checked_num + xlim.ori_num) / (xlim.checked_num + xlim.uncheck_num + xlim.ori_num)
             if r1 > r and xlim.checked == 0:
                 r = r1
