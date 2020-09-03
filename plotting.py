@@ -36,7 +36,7 @@ def plot_front(X_train, Y_train, X_test, Y_test, exp_config, fig_dir):
     plt.show()
 
 
-def plot_genx(X_train, gen_x, length, n_sample, exp_config, fig_dir, xlimit):
+def plot_genx(X_train, gen_x, length, n_sample, exp_config, fig_dir, xlimit, string):
     '''
     synthetic data
     the graph of original x points and generated x points in two-dimensional grid
@@ -77,7 +77,43 @@ def plot_genx(X_train, gen_x, length, n_sample, exp_config, fig_dir, xlimit):
     #plt.scatter(del_x[:, 0], del_x[:, 1], marker='v', label="delete")
 
     if exp_config.run.save_fig:
-        plt.savefig(f"{fig_dir}/vir_point.png")
+        plt.savefig(f"{fig_dir}/"+string)
+
+    plt.show()
+
+    return
+
+
+def plot_qr(del_point, exp_config, fig_dir, string):
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+    fig = plt.figure(2, (10, 10))
+    ax = SubplotZero(fig, 1, 1, 1)
+    fig.add_subplot(ax)
+
+    """设置刻度"""
+
+    plt.title('显示中文标题')
+    plt.xlabel("no.")
+    plt.ylabel("y")
+
+    vir_y = []
+    true_y = []
+    no = []
+
+    for index in range(len(del_point)):
+        point = del_point[index]
+        vir_y.append(point.y)
+        true_y.append(point.true)
+        no.append(index)
+
+    plt.plot(no, vir_y, marker="o", label="vir_y")
+    plt.plot(no, true_y, marker="^", label="true_y")
+
+    plt.legend(loc='upper left')
+
+    if exp_config.run.save_fig:
+        plt.savefig(f"{fig_dir}/" + string)
 
     plt.show()
 
