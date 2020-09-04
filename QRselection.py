@@ -6,9 +6,9 @@ import copy
 def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, ols, x_value_ori,
                  n_sample, X_train, Y_train, sample_list, point_list, x_value):
     n = copy.deepcopy(n_sample)
-    idim = np.argmax(n)
-    ni = np.amax(n)
-    while ni != 0:
+    idim = np.argmin(n)
+    ni = np.amin(n)
+    while ni !=10000:
         for x in x_value_ori[idim]:
             index = find_orix(idim, x, X_train)
             y = Y_train[index]
@@ -17,7 +17,7 @@ def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, ols, x_v
             ori_point.checked = 1
             p_list.append(ori_point)
             wait_list = []
-            l_sort(point_list, x, idim, wait_list, p_list)
+            l_sort(point_list, X_train[index], idim, wait_list, p_list)
             while len(wait_list) > 0:
                 i = confir_point(p_list, idim, wait_list)
                 y_ch = wait_list[i].y
@@ -44,14 +44,14 @@ def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, ols, x_v
                     wait_list[i].checked = 1
                     confir_sxl(wait_list[i], sample_list, xlim_list, 0, idim)
                     del wait_list[i]
-        n[idim] = 0
+        n[idim] = 10000
         idim = np.argmax(n)
         ni = np.amax(n)
 
     n = copy.deepcopy(n_sample)
-    idim = np.argmax(n)
-    ni = np.amax(n)
-    while ni != 0:
+    idim = np.argmin(n)
+    ni = np.amin(n)
+    while ni != 10000:
         for x in x_value[idim]:
             if x in x_value_ori[idim]:
                 break
@@ -84,9 +84,9 @@ def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, ols, x_v
                     wait_list[i].checked = 1
                     confir_sxl(wait_list[i], sample_list, xlim_list, 0, idim)
                     del wait_list[i]
-        n[idim] = 0
-        idim = np.argmax(n)
-        ni = np.amax(n)
+        n[idim] = 10000
+        idim = np.argmin(n)
+        ni = np.amin(n)
     return
 
 
@@ -111,15 +111,15 @@ def dis(point, p_list, dim):
     return d
 
 
-def l_sort(point_list, xv, dim, wait_list, p_list):
+def l_sort(point_list, x_train, dim, wait_list, p_list):
     for point in point_list:
         r = 0
         for i in range(len(point.x)):
-            if i != dim and point.x[i] != xv:
+            if i != dim and point.x[i] != x_train[i]:
                 break
-            elif i != dim and point.x[i] == xv:
+            elif i != dim and point.x[i] == x_train[i]:
                 r += 1
-            elif i == dim and point.x[i] == xv:
+            elif i == dim and point.x[i] == x_train[i]:
                 break
             else:
                 r += 1

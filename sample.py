@@ -79,20 +79,20 @@ def get_sample_length(X_train, imp):
     dist = np.array(dist)
     dist = np.around(dist, decimals=3)
     print("Euclidean distance in x domain：")
-    print(dist)
+    #print(dist)
 
     np.set_printoptions(suppress=True)
     dist = dist.flatten()
     m_dist = get_min(dist)
-    m_imp = min(imp)
+    m_imp = max(imp)
 
     print("minist dist:")
     print(m_dist)
-    print("minist imp:")
+    print("maxist imp:")
     print(m_imp)
 
     for index in range(len(imp)):
-        l = m_dist * imp[index] / m_imp
+        l = m_dist * m_imp / imp[index]
         length.append(l)
 
     length = np.array(length)

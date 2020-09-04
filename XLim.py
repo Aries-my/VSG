@@ -76,7 +76,7 @@ def sample_filling(xlim_list, sample_list, n_sample, dim):
                             t = random.randint(0, i - 1)
                         else:
                             t = 0
-                        x_insert = random.uniform(sample.lim[idim][0], sample.lim[idim][1])
+                        x_insert = (sample.lim[idim][0] + sample.lim[idim][1]) / 2
                         x_gen = xl.slist[r].gen_xlist[t]
                         x_gen[idim] = x_insert
                         sample.gen_num += 1
