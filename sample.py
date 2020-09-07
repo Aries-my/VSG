@@ -85,6 +85,7 @@ def get_sample_length(X_train, imp):
     dist = dist.flatten()
     m_dist = get_min(dist)
     m_imp = max(imp)
+    max_dist = max(dist)
 
     print("minist dist:")
     print(m_dist)
@@ -99,7 +100,7 @@ def get_sample_length(X_train, imp):
     length = np.around(length, decimals=5)
     print("The original length of the smaple: ")
     print(length)
-    return length
+    return length, max_dist
 
 
 def get_x_len(x_min, x_max):
@@ -264,3 +265,50 @@ def gen_is_list(X_train, length, is_fliter):
                     break
     return is_fliter
 
+
+def point_filiter(gen_x_cross, X_train, max_dist, x_value, x_value_ori, dim):
+    x_min = np.amin(X_train, axis=0)
+    x_max = np.amax(X_train, axis=0)
+    x_com = copy.deepcopy(X_train)
+    #x_com = x_com.tolist()
+    for index in range(dim):
+        for x in x_value[index]:
+             if x not in x_value_ori[index]:
+                point = []
+                for i in range(dim):
+                    if i == index:
+                        for i in x:
+                            point.append(i)
+                    else:
+                        point.append((x_min[index] + x_max[index]) / 2)
+                point = np.array(point)
+                x_com = np.vstack((x_com, point))
+    i = 0
+    #x_com = np.array(x_com)
+    while i < len(gen_x_cross):
+        point = gen_x_cross[i]
+        x_list = []
+        for index in range(dim):
+            xi = point[index]
+            for x in x_com:
+                if xi == x[index]:
+                    x_list.append(x)
+                    break
+        dist = 0
+        for xi in x_list:
+            for xj in x_list:
+                if x_dist(xi, xj) > dist:
+                    dist = x_dist(xi, xj)
+        if dist > max_dist / 5:
+            del gen_x_cross[i]
+        else:
+            i += 1
+    return
+
+
+def x_dist(list1, list2):
+    dist = 0
+    for index in range(len(list1)):
+        dist += pow(list1[index] - list2[index], 2)
+    dist = math.sqrt(dist)
+    return dist

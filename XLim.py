@@ -28,16 +28,16 @@ def con_sample(xlim_list, length, x_min, dim, n_sample):
         xlim_list.append(x_list)
 
 
-def sample_feature(xlim_list, sample_list, xvalue):
+def sample_feature(xlim_list, sample_list, xvalue, x_value_ori):
     for index in range(len(xlim_list)):
         for i in range(len(xlim_list[index])):
             xl = xlim_list[index][i]
             dim = xl.dim
             for x in xvalue[dim]:
-                if xl.xl < x < xl.xu:
+                if xl.xl <= x < xl.xu:
                     xl.xlist.append(x)
             if len(xl.xlist) == 0:
-                x_insert = random.uniform(xl.xl, xl.xu)
+                x_insert = (xl.xl + xl.xu) / 2
                 xl.xlist.append(x_insert)
                 xvalue[index].append(x_insert)
             add_sample(xl, sample_list)

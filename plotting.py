@@ -55,14 +55,10 @@ def plot_genx(X_train, gen_x, length, n_sample, exp_config, fig_dir, xlimit, str
 
     """设置刻度"""
     x_min = np.amin(X_train, axis=0)
-    x1_min = x_min[0]
-    x2_min = x_min[1]
 
     ax.set_xlim(0, 1)
-    x1 = np.arange(x1_min - length[0] / 2, ((x1_min-length[0])+n_sample[0]*length[0]), x1_space, "float")
     ax.set_xticks(xlimit[0])
     ax.set_ylim(0, 1)
-    x2 = np.arange(x2_min - length[1] / 2, ((x2_min-length[1])+n_sample[1]*length[1]), x2_space, "float")
     ax.set_yticks(xlimit[1])
 
     # 设置网格样式
@@ -74,7 +70,6 @@ def plot_genx(X_train, gen_x, length, n_sample, exp_config, fig_dir, xlimit, str
 
     plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", label="train")
     plt.scatter(gen_x[:, 0], gen_x[:, 1], marker="o", label="gen")
-    #plt.scatter(del_x[:, 0], del_x[:, 1], marker='v', label="delete")
 
     if exp_config.run.save_fig:
         plt.savefig(f"{fig_dir}/"+string)
@@ -109,6 +104,39 @@ def plot_qr(del_point, exp_config, fig_dir, string):
 
     plt.plot(no, vir_y, marker="o", label="vir_y")
     plt.plot(no, true_y, marker="^", label="true_y")
+
+    plt.legend(loc='upper left')
+
+    if exp_config.run.save_fig:
+        plt.savefig(f"{fig_dir}/" + string)
+
+    plt.show()
+
+    return
+
+
+def plot_erro(vir_point, exp_config, fig_dir, string):
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+    fig = plt.figure(2, (10, 10))
+    ax = SubplotZero(fig, 1, 1, 1)
+    fig.add_subplot(ax)
+
+    """设置刻度"""
+
+    plt.title('显示中文标题')
+    plt.xlabel("no.")
+    plt.ylabel("erro")
+
+    erro_y = []
+    no = []
+
+    for index in range(len(vir_point)):
+        point = vir_point[index]
+        erro_y.append(point.y - point.true)
+        no.append(index)
+
+    plt.plot(no, erro_y, marker="o", label="erro")
 
     plt.legend(loc='upper left')
 

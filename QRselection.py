@@ -1,6 +1,9 @@
-import numpy as np
-import XLim, Point
 import copy
+
+import numpy as np
+
+import Point
+import XLim
 
 
 def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, ols, x_value_ori,
@@ -8,7 +11,7 @@ def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, ols, x_v
     n = copy.deepcopy(n_sample)
     idim = np.argmin(n)
     ni = np.amin(n)
-    while ni !=10000:
+    while ni != 1000:
         for x in x_value_ori[idim]:
             index = find_orix(idim, x, X_train)
             y = Y_train[index]
@@ -44,49 +47,9 @@ def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, ols, x_v
                     wait_list[i].checked = 1
                     confir_sxl(wait_list[i], sample_list, xlim_list, 0, idim)
                     del wait_list[i]
-        n[idim] = 10000
+        n[idim] = 1000
         idim = np.argmax(n)
         ni = np.amax(n)
-
-    n = copy.deepcopy(n_sample)
-    idim = np.argmin(n)
-    ni = np.amin(n)
-    while ni != 10000:
-        for x in x_value[idim]:
-            if x in x_value_ori[idim]:
-                break
-            p_list = []
-            wait_list = []
-            l_sort(point_list, x, idim, wait_list, p_list)
-            while len(wait_list) > 0:
-                i = confir_point(p_list, idim, wait_list)
-                y_ch = wait_list[i].y
-                x_ch = wait_list[i].x[idim]
-                i_com, y_com = closed_y(y_ch, p_list)
-                x_com = p_list[i_com].x[idim]
-                if y_ch > y_com:
-                    q_index = quan(y_ch, y_quantile)
-                else:
-                    q_index = quan(y_com, y_quantile)
-                if q_index < len(y_quantile):
-                    b = models[q_index].param[idim]
-                else:
-                    b = ols.params[idim + 1]
-                if b > 0 and (y_com - y_ch) * (x_com - x_ch) > 0 or b < 0 and (y_com - y_ch) * (
-                        x_com - x_ch) < 0:
-                    wait_list[i].checked = 1
-                    confir_sxl(wait_list[i], sample_list, xlim_list, 1, idim)
-                    vir_xpoint.append(wait_list[i].x)
-                    vir_ypoint.append(wait_list[i].y)
-                    p_list.append(wait_list[i])
-                    del wait_list[i]
-                else:
-                    wait_list[i].checked = 1
-                    confir_sxl(wait_list[i], sample_list, xlim_list, 0, idim)
-                    del wait_list[i]
-        n[idim] = 10000
-        idim = np.argmin(n)
-        ni = np.amin(n)
     return
 
 
