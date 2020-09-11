@@ -1,7 +1,5 @@
 import copy
-
 import numpy as np
-
 import Point
 import XLim
 

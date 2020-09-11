@@ -25,7 +25,6 @@ def get_sta_reg_cov(X_train, Y_train):
 
 
 def get_importance(coe, Y_train):
-
     # 得到每列的标准差,是一维数组
     y_std = np.std(Y_train)
     print("y std:")
@@ -73,13 +72,13 @@ def fit_length(L, length):
 
 def get_sample_length(X_train, imp):
     length = []
-    #get Euclidean distance in x domain
+    # get Euclidean distance in x domain
     sum_x = np.sum(np.square(X_train), 1)
     dist = np.add(np.add(-2 * np.dot(X_train, X_train.T), sum_x).T, sum_x)
     dist = np.array(dist)
     dist = np.around(dist, decimals=3)
     print("Euclidean distance in x domain：")
-    #print(dist)
+    # print(dist)
 
     np.set_printoptions(suppress=True)
     dist = dist.flatten()
@@ -139,7 +138,7 @@ def gen_x_center(dim, length, n_sample, x_min):
     X = []
     for index in range(dim):
         mi = x_min[index]
-        print("第"+str(index)+"维度，最小的x为"+str(mi))
+        print("第" + str(index) + "维度，最小的x为" + str(mi))
         i = 0
         x = []
         while i < n_sample[index]:
@@ -148,7 +147,7 @@ def gen_x_center(dim, length, n_sample, x_min):
             x.append(a)
             i += 1
         X.append(x)
-        print("第"+str(index)+"维度的中心值有：")
+        print("第" + str(index) + "维度的中心值有：")
         print(x)
     return X
 
@@ -193,7 +192,7 @@ def same_point(point1, point2):
     return 1
 
 
-def sample_point_num (X_train, length, point):
+def sample_point_num(X_train, length, point):
     for x in X_train:
         r = 0
         for index in range(len(length)):
@@ -216,6 +215,7 @@ def gen_true_x(X_train, point_list, length):
             i += 1
     return point_list
 
+
 def del_x(gen_sample_point, gen_x_point):
     '''
     find the deleted x points
@@ -227,13 +227,14 @@ def del_x(gen_sample_point, gen_x_point):
     for p in range(len(gen_sample_point)):
         if_exist = 0
         for q in range(len(gen_x_point)):
-            if compare_num(gen_sample_point[p],gen_x_point[q]) == 1:
+            if compare_num(gen_sample_point[p], gen_x_point[q]) == 1:
                 if_exist = 1
                 break
         if if_exist == 0:
             del_x_point.append(gen_sample_point[p])
     del_x_point = np.array(del_x_point)
     return del_x_point
+
 
 def compare_num(list1, list2):
     for i in range(len(list1)):
@@ -267,13 +268,13 @@ def gen_is_list(X_train, length, is_fliter):
     return is_fliter
 
 
-def point_filiter(gen_x_cross, X_train, max_dist, x_value, x_value_ori, dim):
+def point_filiter(gen_x_cross, X_train, max_dist, x_value, x_value_ori, dim, f_list):
     x_min = np.amin(X_train, axis=0)
     x_max = np.amax(X_train, axis=0)
     x_com = copy.deepcopy(X_train)
     for index in range(dim):
         for x in x_value[index]:
-             if x not in x_value_ori[index]:
+            if x not in x_value_ori[index]:
                 point = []
                 for i in range(dim):
                     if i == index:
@@ -283,7 +284,6 @@ def point_filiter(gen_x_cross, X_train, max_dist, x_value, x_value_ori, dim):
                 point = np.array(point)
                 x_com = np.vstack((x_com, point))
     i = 0
-    #x_com = np.array(x_com)
     while i < len(gen_x_cross):
         point = gen_x_cross[i]
         x_list = []
@@ -299,6 +299,7 @@ def point_filiter(gen_x_cross, X_train, max_dist, x_value, x_value_ori, dim):
                 if x_dist(xi, xj) > dist:
                     dist = x_dist(xi, xj)
         if dist > max_dist / 5:
+            f_list.append(gen_x_cross[i])
             del gen_x_cross[i]
         else:
             i += 1
