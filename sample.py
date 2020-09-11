@@ -165,7 +165,8 @@ def gen_two_product(list1, list2):
 
 
 def gen_product(list_of_list):
-    list1 = list_of_list[0]
+    list = copy.deepcopy(list_of_list)
+    list1 = list[0]
     for index in range(len(list1)):
         i = list1[index]
         list1[index] = []
@@ -270,15 +271,13 @@ def point_filiter(gen_x_cross, X_train, max_dist, x_value, x_value_ori, dim):
     x_min = np.amin(X_train, axis=0)
     x_max = np.amax(X_train, axis=0)
     x_com = copy.deepcopy(X_train)
-    #x_com = x_com.tolist()
     for index in range(dim):
         for x in x_value[index]:
              if x not in x_value_ori[index]:
                 point = []
                 for i in range(dim):
                     if i == index:
-                        for i in x:
-                            point.append(i)
+                        point.append(x)
                     else:
                         point.append((x_min[index] + x_max[index]) / 2)
                 point = np.array(point)

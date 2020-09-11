@@ -7,11 +7,18 @@ def function(x1,x2):
     return y
 
 
-def get_functional_test_data():
+def function_3d(x1, x2, x3):
+
+    y = 4 * (x1 - 0.5) * (x2 - 0.5) * np.sin(2 * np.pi * ((x2 ** 2 + x3 ** 2)**0.5))
+
+    return y
+
+
+def get_functional_test_data(file_name):
     "get functional test data"
     X=[]
     Y=[]
-    with open("../data/functional/test_data.txt",'r') as f:
+    with open(file_name,'r') as f:
         data = f.readlines()
 
     for line in data:
@@ -30,11 +37,11 @@ def get_functional_test_data():
     return X_test, Y_test
 
 
-def get_functional_train_data():
+def get_functional_train_data(file_name):
     "get functional train data"
     X = []
     Y = []
-    with open("../data/functional/train_data.txt",'r') as f:
+    with open(file_name,'r') as f:
         data = f.readlines()
 
     for line in data:

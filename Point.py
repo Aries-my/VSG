@@ -4,6 +4,7 @@ class Point:
         self.y = y
         self.checked = 0
         self.true = 0
+        self.erro = 0
 
 
 def con_point(gen_x_cross, gen_y, point_list):

@@ -28,7 +28,7 @@ def con_sample(xlim_list, length, x_min, dim, n_sample):
         xlim_list.append(x_list)
 
 
-def sample_feature(xlim_list, sample_list, xvalue, x_value_ori):
+def sample_feature(xlim_list, sample_list, xvalue):
     for index in range(len(xlim_list)):
         for i in range(len(xlim_list[index])):
             xl = xlim_list[index][i]
