@@ -24,9 +24,9 @@ def plot_front(X_train, Y_train, X_test, Y_test, exp_config, fig_dir):
     z = dataset.function(x1, x2)
     plt.title("This is graph of total data")
     ax.plot_surface(x1, x2, z, rstride=1, cstride=1)
-    ax.set_xlabel('x1')
-    ax.set_ylabel('x2')
-    ax.set_zlabel('f(x1,x2)')
+    ax.set_xlabel('x0')
+    ax.set_ylabel('x1')
+    ax.set_zlabel('f(x0,x1)')
 
     plt.plot(X_train[:, 0], X_train[:, 1], Y_train, 'bo', label="train samples")
     plt.plot(X_test[:, 0], X_test[:, 1], Y_test, 'ro', label="test samples")
@@ -64,9 +64,9 @@ def plot_genx(X_train, gen_x, length, n_sample, exp_config, fig_dir, xlimit, str
     # 设置网格样式
     ax.grid(True, linestyle='-', color="grey")
 
-    plt.title('显示中文标题')
-    plt.xlabel("x1")
-    plt.ylabel("x2")
+    plt.title("")
+    plt.xlabel("x0")
+    plt.ylabel("x1")
 
     plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", label="train")
     plt.scatter(gen_x[:, 0], gen_x[:, 1], marker="o", label="gen")
@@ -88,7 +88,7 @@ def plot_qr(del_point, exp_config, fig_dir, string):
 
     """设置刻度"""
 
-    plt.title('显示中文标题')
+    plt.title(string)
     plt.xlabel("no.")
     plt.ylabel("y")
 
@@ -124,7 +124,7 @@ def plot_erro(vir_point, exp_config, fig_dir, string):
 
     """设置刻度"""
 
-    plt.title('显示中文标题')
+    plt.title(string)
     plt.xlabel("no.")
     plt.ylabel("erro")
 

@@ -92,7 +92,7 @@ def get_sample_length(X_train, imp):
     print(m_imp)
 
     for index in range(len(imp)):
-        l = m_dist * m_imp / imp[index]
+        l = m_dist * imp[index] / m_imp
         length.append(l)
 
     length = np.array(length)
@@ -298,7 +298,7 @@ def point_filiter(gen_x_cross, X_train, max_dist, x_value, x_value_ori, dim, f_l
             for xj in x_list:
                 if x_dist(xi, xj) > dist:
                     dist = x_dist(xi, xj)
-        if dist > max_dist / 5:
+        if dist > max_dist / 7:
             f_list.append(gen_x_cross[i])
             del gen_x_cross[i]
         else:
