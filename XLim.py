@@ -19,6 +19,42 @@ class XLim:
         self.xlist = []
 
 
+def check(sample_list, f_list, gen_x_cross, X_train, xlim_list):
+    for sample in sample_list:
+        if len(sample.gen_xlist) == 0:
+            l = []
+            for point in f_list:
+                j = 0
+                for i in range(len(xlim_list)):
+                    if in_limit(point, xlim_list[i][-1]) or in_limit(point, xlim_list[i][0]):
+                        j = 1
+                        break
+                if j == 0:
+                    if in_sample(point, sample) == 1:
+                        l.append(point)
+            if len(l) == 1:
+                gen_x_cross.append(l[0])
+            if len(l) > 1:
+                i = np.random.randint(0, len(l)-1)
+                gen_x_cross.append(l[i])
+    return
+
+
+def check2(sample_list, xlim_list, gen_x_checked, discard_list, gen_x):
+    g_list = []
+    for point in discard_list:
+        for i in range(len(xlim_list)):
+            if in_limit(point, xlim_list[i][-1]) or in_limit(point, xlim_list[i][0]):
+                g_list.append(point)
+    for sample in sample_list:
+        for x in sample.gen_xlist:
+            if x not in g_list:
+                gen_x_checked.append(x)
+            else:
+                sample.gen_xlist = []
+    return
+
+
 def con_sample(xlim_list, length, x_min, dim, n_sample):
     for index in range(dim):
         x_list = []
@@ -185,6 +221,21 @@ def sample_attri(sample_list, X_train, gen_x_cross, Y_train):
     return
 
 
+def sample_attri2(sample_list, X_train, gen_x_cross, Y_train):
+    for sample in sample_list:
+        for index in range(len(X_train)):
+            point = X_train[index]
+            if in_sample(point, sample):
+                sample.ori_num += 1
+                sample.ori_xlist.append(point)
+                sample.ori_ylist.append(Y_train[index])
+        for point in gen_x_cross:
+            if in_sample(point, sample):
+                sample.gen_num += 1
+                sample.gen_xlist.append(point)
+    return
+
+
 def in_sample(point, sample):
     for index in range(len(point)):
         if sample.lim[index][0] <= point[index] < sample.lim[index][1]:
@@ -201,5 +252,16 @@ def add_y(sample_list, gpr):
             point = [point]
             point = np.array(point)
             sample.gen_ylist.append(gpr.predict(point)[0])
+            sample.checked_list.append(0)
+    return
+
+
+def add_y2(sample_list, cgan, scaler):
+    for sample in sample_list:
+        for index in range(len(sample.gen_xlist)):
+            point = sample.gen_xlist[index]
+            point = [point]
+            point = np.array(point)
+            sample.gen_ylist.append(cgan.predict(scaler.transform(point)[0]))
             sample.checked_list.append(0)
     return

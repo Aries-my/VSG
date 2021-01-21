@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 def function(x1,x2):
     "functional(x1,x2)"
@@ -66,3 +67,74 @@ def get_dataset(n_instance=1000, scenario="functional", seed=1):
         raise NotImplementedError("Dataset does not exist")
 
     return X_train, Y_train, X_test, Y_test
+
+def add_train(train, vir):
+    t = []
+    for i in range(len(train)):
+        t.append(train[i])
+    for i in range(len(vir)):
+        t.append(vir[i])
+    return t
+
+
+def get_true_x_give_y(given_y=0.5, tolerance=0.01, num_realizations=10000000, *, X=None, y=None):
+    if (X is None) or (y is None):
+        X, y = gen_data_magical_sinus(num_realizations)
+
+    data_points = np.concatenate((X, y), axis=1)
+    true_x_give_y = data_points[((y.squeeze() > given_y - tolerance / 2) *
+                                 (y.squeeze() < given_y + tolerance / 2)), :-1]
+    return true_x_give_y
+
+
+def gen_data_magical_sinus(n_instance):
+    """
+    Generate n_instance of samples from a modified sinus function, noted by
+    mdf_sinus here.
+    """
+
+    def _randrange(n, vmin, vmax):
+        """
+        Helper function to make an array of random numbers having shape (n, )
+        with each number distributed Uniform(vmin, vmax).
+        """
+        return (vmax - vmin) * np.random.rand(n) + vmin
+
+    noisey = 0
+    x_1 = _randrange(n_instance, 0, 1)
+    x_2 = _randrange(n_instance, 0, 1)
+
+    ex_1 = np.random.normal(0, 0.1, n_instance)
+    ex_2 = np.random.normal(0, 1, n_instance)
+
+    X = np.column_stack((x_1, x_2))
+    y = _magical_sinus(x_1, x_2) + noisey * np.sin(ex_1 + ex_2)
+    y = y.reshape((n_instance, 1))
+    return X, y
+
+
+def _magical_sinus(x, y):
+    """
+    Create a noise-free single-valued benchmarking function:
+                 z = f(x, y)
+    derived from sinus function. It feeds two variables and
+    returns a single value for each given pair of inputs(x, y).
+    """
+    z =1.335*(1.6*(1-x))+np.exp(2*x-1)*np.sin(4*np.pi*(x-0.6)**2)+np.exp(3*(y-0.5))*np.sin(3*np.pi*(y-0.9)**2)
+#    z = (1.3356 * (1.5 * (1 - x))
+#         + (np.exp(2 * x - 1) * np.sin(3 * np.pi * (x - 0.6) ** 2))
+#         + (np.exp(3 * (y - 0.5)) * np.sin(4 * np.pi * (y - 0.9) ** 2)))
+    return z
+
+
+def get_true_x_give_y_real(given_y=0.5, tolerance=0.01, num_realizations=10000000, *, X=None, y=None):
+    if (X is None) or (y is None):
+        data_points = np.genfromtxt(f"./data/hdpe/hdpe.data", delimiter=' ')
+        X = data_points[0:135, 0:15]
+        y = data_points[0:135, 15]
+
+    #data_points = np.concatenate((X, y), axis=1)
+    true_x_give_y = data_points[((y.squeeze() > given_y - tolerance / 2) *
+                             (y.squeeze() < given_y + tolerance / 2)), :-1]
+    return true_x_give_y
+

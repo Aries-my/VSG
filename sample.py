@@ -119,13 +119,36 @@ def get_x_len(x_min, x_max):
     return L
 
 
-def divide_sample(length, L):
+def divide_sample(length, L, n):
     num, n_sample = fit_length(L, length)
-    while num > 130:
+
+    while num > n:
         for index in range(len(length)):
             length[index] = length[index] * 1.2
         num, n_sample = fit_length(L, length)
 
+    print("分割数：")
+    n_sample = np.array(n_sample)
+    print(n_sample)
+    print("样方的大小：")
+    print(length)
+    return n_sample, length
+
+
+def divide_sample2(length, L, n):
+    num, n_sample = fit_length(L, length)
+
+    '''while 1:
+        for index in range(len(length)):
+            if n_sample[index] >= 6:
+                n_sample[index] = 6
+                length[index] = L[index] / n_sample[index]
+            else:
+                length[index] = length[index] * 1.2
+        num, n_sample = fit_length(L, length)
+        if n- 50 <= num <= n:
+            break
+    '''
     print("分割数：")
     n_sample = np.array(n_sample)
     print(n_sample)
@@ -163,7 +186,22 @@ def gen_two_product(list1, list2):
     return res_list
 
 
-def gen_product(list_of_list):
+def gen_product(list_of_list, x_com, E_dist, max_dist):
+    list = copy.deepcopy(list_of_list)
+    list1 = list[0]
+    for index in range(len(list1)):
+        i = list1[index]
+        list1[index] = []
+        list1[index].append(i)
+    for tmp_list in list_of_list[1:]:
+        list2 = tmp_list
+        two_res_list = gen_two_product(list1, list2)
+        check_product(two_res_list, x_com, E_dist, max_dist)
+        list1 = two_res_list
+    return list1
+
+
+def gen_product2(list_of_list):
     list = copy.deepcopy(list_of_list)
     list1 = list[0]
     for index in range(len(list1)):
@@ -175,6 +213,94 @@ def gen_product(list_of_list):
         two_res_list = gen_two_product(list1, list2)
         list1 = two_res_list
     return list1
+
+
+def check_product(res_list, x_com, E_dist, max_dist):
+    i = 0
+    while i < (len(res_list)):
+        item = res_list[i]
+        f = 0
+        x_list = []
+        i_list = []
+        for idim in range(len(item)):
+            for j in range(len(x_com)):
+                if item[idim] == x_com[j][idim]:
+                    x_list.append(x_com[j])
+                    i_list.append(j)
+                    break
+        x1 = 0
+        x2 = len(item) - 1
+        while x1 < x2:
+            i1 = i_list[x1]
+            i2 = i_list[x2]
+            d = E_dist[i1][i2]
+            if d > max_dist / 5:
+                f = 1
+                break
+            else:
+                x1 += 1
+        if f == 1:
+            del res_list[i]
+        else:
+            i += 1
+    return
+
+
+def check_dist(dim, x_com, max_dist, list, E_dist):
+    x_list = []
+    i_list = []
+    for index in range(dim):
+        l = []
+        il = []
+        for j in range(len(list[index])):
+            xi = list[index][j]
+            for i in range(len(x_com)):
+                if xi == x_com[i][index]:
+                    l.append(x_com[i])
+                    il.append(i)
+                    break
+        x_list.append(l)
+        i_list.append(il)
+    idim = 0
+    while idim< (len(x_list) - 1):
+        j = 0
+        while j < (len(x_list[idim])):
+            i1 = i_list[idim][j]
+            p = idim + 1
+            while p < len(x_list):
+                m = len(x_list[p]) -1
+                f = 0
+                while m > -1:
+                    i2 = i_list[p][m]
+                    if E_dist[i1][i2] > max_dist / 7:
+                        f = 1
+                        del x_list[p][m]
+                        del i_list[p][m]
+                        del list[p][m]
+                    m -= 1
+                if f == 1:
+                    del x_list[idim][j]
+                    del i_list[idim][j]
+                    del list[idim][j]
+                else:
+                    j += 1
+                if is_black(list) == 0:
+                    break
+                p += 1
+            if is_black(list) == 0:
+                break
+            j += 1
+        if is_black(list) == 0:
+            break
+        idim += 1
+    return
+
+
+def is_black(list):
+    for i in range(len(list)):
+        if len(list[i])== 0:
+            return 0
+    return 1
 
 
 def cross_point_del(gen_x_cross, X_train):

@@ -44,6 +44,7 @@ def qr_selection(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, ols, x_v
                 else:
                     wait_list[i].checked = 1
                     confir_sxl(wait_list[i], sample_list, xlim_list, 0, idim)
+                    #del_list.append(wait_list[i])
                     del wait_list[i]
         n[idim] = 1000
         idim = np.argmax(n)
@@ -58,6 +59,50 @@ def qr_selection2(xlim_list, models, vir_xpoint, vir_ypoint, y_quantile, ols, x_
     ni = np.amax(n)
     while ni != 0:
         for x in x_value_ori[idim]:
+            index = find_orix(idim, x, X_train)
+            y = Y_train[index]
+            p_list = []
+            ori_point = Point.Point(X_train[index], y)
+            ori_point.checked = 1
+            p_list.append(ori_point)
+            wait_list = []
+            l_sort(point_list, X_train[index], idim, wait_list, p_list)
+            while len(wait_list) > 0:
+                i = confir_point(p_list, idim, wait_list)
+                y_ch = wait_list[i].y
+                x_ch = wait_list[i].x[idim]
+                i_com, y_com = closed_y(y_ch, p_list)
+                x_com = p_list[i_com].x[idim]
+                if y_ch > y_com:
+                    q_index = quan(y_ch, y_quantile)
+                else:
+                    q_index = quan(y_com, y_quantile)
+                if q_index < len(y_quantile):
+                    b = models[q_index].param[idim]
+                else:
+                    b = ols.params[idim + 1]
+                if b > 0 and (y_com - y_ch) * (x_com - x_ch) > 0 or b < 0 and (y_com - y_ch) * (
+                        x_com - x_ch) < 0:
+                    wait_list[i].checked = 1
+                    confir_sxl(wait_list[i], sample_list, xlim_list, 1, idim)
+                    vir_xpoint.append(wait_list[i].x)
+                    vir_ypoint.append(wait_list[i].y[0])
+                    p_list.append(wait_list[i])
+                    del wait_list[i]
+                else:
+                    wait_list[i].checked = 1
+                    confir_sxl(wait_list[i], sample_list, xlim_list, 0, idim)
+                    del wait_list[i]
+        n[idim] = 0
+        idim = np.argmax(n)
+        ni = np.amax(n)
+    n = copy.deepcopy(n_sample)
+    idim = np.argmax(n)
+    ni = np.amax(n)
+    while ni != 0:
+        for x in x_value[idim]:
+            if x in x_value_ori[idim]:
+                break
             index = find_orix(idim, x, X_train)
             y = Y_train[index]
             p_list = []
