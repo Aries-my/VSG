@@ -6,6 +6,7 @@ from matplotlib import cm
 import dataset,sample
 import pandas as pd
 import seaborn as sns
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 
 def plot_dataset(X,  y, exp_config, fig_dir):
@@ -62,15 +63,15 @@ def plot_genx(X_train, gen_x, length, n_sample, exp_config, fig_dir, xlimit, str
     ax.set_yticks(xlimit[1])
 
     # 设置网格样式
-    #ax.grid(True, linestyle='-', color="grey")
-    ax.grid(True, linestyle='-', color="black")
+    ax.grid(True, linestyle='-', color="grey")
+    #ax.grid(True, linestyle='-', color="black")
 
     plt.title("")
     plt.xlabel("x1")
     plt.ylabel("x2")
 
-    plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", label="Original samples", color="black")
-    plt.scatter(gen_x[:, 0], gen_x[:, 1], marker="s", label="Generated samples", color="black")
+    plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", label="Original samples", color="red")
+    plt.scatter(gen_x[:, 0], gen_x[:, 1], marker="s", label="Generated samples", color="green")
 
     if exp_config.run.save_fig:
         plt.savefig(f"{fig_dir}/"+string)
@@ -103,8 +104,8 @@ def plot_qr(del_point, exp_config, fig_dir, string):
         true_y.append(point.true)
         no.append(index)
 
-    plt.plot(no, vir_y, marker="s", label="Virtual y", color="black")
-    plt.plot(no, true_y, marker="o", label="Original y", color="black")
+    plt.plot(no, vir_y, marker="s", label="Virtual y", color="green")
+    plt.plot(no, true_y, marker="o", label="True y", color="red")
 
     plt.legend(loc='upper left')
 
@@ -137,7 +138,7 @@ def plot_erro(vir_point, exp_config, fig_dir, string):
         erro_y.append(point.y - point.true)
         no.append(index)
 
-    plt.plot(no, erro_y, marker="o", label="erro", color="black")
+    plt.plot(no, erro_y, marker="o", label="erro", color="blue")
 
     plt.legend(loc='upper left')
 
@@ -209,14 +210,14 @@ def plot_sample(X_train, exp_config, fig_dir, xlimit, string):
     ax.set_yticks(xlimit[1])
 
     # 设置网格样式
-    #ax.grid(True, linestyle='-', color="grey")
-    ax.grid(True, linestyle='-', color="black")
+    ax.grid(True, linestyle='-', color="grey")
+    #ax.grid(True, linestyle='-', color="black")
 
     plt.title("")
     plt.xlabel("x1")
     plt.ylabel("x2")
 
-    plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", label="Original samples", color="black")
+    plt.scatter(X_train[:, 0], X_train[:, 1], marker="o", label="Original samples", color="red")
 
     if exp_config.run.save_fig:
         plt.savefig(f"{fig_dir}/"+string)
@@ -270,3 +271,50 @@ def plot_scatter_density(x, y, title=""):
     scatter_kde()
     fig.suptitle(title)
     plt.show()
+
+def _plot_surface(ax, function):
+    x_range = np.arange(0, 1, 0.01)
+    y_range = np.arange(0, 1, 0.01)
+    X, Y = np.meshgrid(x_range, y_range)
+    Z = function(X, Y)
+
+    norm = plt.Normalize(Z.min(), Z.max())
+    colors = cm.Blues(norm(Z))
+    surf = ax.plot_surface(X, Y, Z,
+                           rstride=5, cstride=5, facecolors=colors, shade=False, zorder=1)
+    surf.set_facecolor((0, 0, 0, 0))
+    return ax
+
+
+def _magical_sinus(x, y):
+    """
+    Create a noise-free single-valued benchmarking function:
+                 z = f(x, y)
+    derived from sinus function. It feeds two variables and
+    returns a single value for each given pair of inputs(x, y).
+    """
+    z =1.335*(1.6*(1-x))+np.exp(2*x-1)*np.sin(4*np.pi*(x-0.6)**2)+np.exp(3*(y-0.5))*np.sin(3*np.pi*(y-0.9)**2)
+
+    return z
+
+
+def plot_3d(X_train, X_test, y_train, y_test, X_del, Y_del, exp_config, fig_dir, save_fig=False):
+    fig = plt.figure(figsize=(6, 5))
+    ax1 = Axes3D(fig)
+    # ax1.set_title(f"Data scenario {exp_config.dataset.scenario}")
+
+    ax1 = _plot_surface(ax1, dataset.function)
+    # 画数据点
+    ax1.scatter(X_train[:,0], X_train[:,1], y_train, c='r', label="Training Samples", s=10, marker='o')
+    ax1.scatter(X_test[:,0], X_test[:,1], y_test, color='yellow', label="Virtual Samples", s=12, marker='^')
+    ax1.scatter(X_del[:, 0], X_del[:, 1], Y_del, color='green', label="Deleted Samples", s=12, marker='s')
+
+    ax1.set_zlim(0, 1.05 * max(y_train.max(), y_train.max()))
+    ax1.zaxis.set_major_locator(LinearLocator(10))
+    ax1.zaxis.set_major_formatter(FormatStrFormatter(r'%.02f'))
+    ax1.set_xlabel(r"$x_1$"), ax1.set_ylabel(r"$x_2$"), ax1.set_zlabel(r"$f(x_1,x_2)$")
+    plt.legend(loc='upper left')
+    if exp_config.run.save_fig:
+        plt.savefig(f"{fig_dir}/data.png")
+    plt.show()
+
